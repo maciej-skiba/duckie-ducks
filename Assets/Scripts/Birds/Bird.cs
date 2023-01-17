@@ -10,8 +10,11 @@ public abstract class Bird : MonoBehaviour
 
     private void OnMouseDown()
     {
-        Death();
-        ScoreManager.score += pointsGain;
+        if (Weapon._canShoot)
+        {
+            Death();
+            ScoreManager.score += pointsGain;
+        }
     }
 
     protected virtual void Death()

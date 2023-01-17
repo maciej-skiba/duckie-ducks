@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: fd32aba4e986d7f4cbee1dab2dfac173
+guid: e920b4ca9420b74439571aafa5321985
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -47,7 +47,7 @@ TextureImporter:
   spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
-  spritePixelsToUnits: 24
+  spritePixelsToUnits: 100
   spriteBorder: {x: 0, y: 0, z: 0, w: 0}
   spriteGenerateFallbackPhysicsShape: 1
   alphaUsage: 1
@@ -105,85 +105,190 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Duck_0
+      name: Pistol_0
       rect:
         serializedVersion: 2
         x: 0
-        y: 49
-        width: 33
-        height: 15
+        y: 96
+        width: 48
+        height: 48
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: c041599063fbb174eb215528bb44f814
-      internalID: 1100195287
+      spriteID: 9f2bf811c76d0c440b97c992cb32cc92
+      internalID: -1344693747
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Duck_1
+      name: Pistol_1
       rect:
         serializedVersion: 2
-        x: 33
-        y: 49
-        width: 33
-        height: 15
+        x: 48
+        y: 96
+        width: 48
+        height: 48
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: bcb79a8685d013b4096076ddd738c93f
-      internalID: -298628478
+      spriteID: 55d4ffcb7e29bd24194a6e95eddf7f15
+      internalID: -18039747
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Duck_2
+      name: Pistol_2
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 96
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 45dba98dd0dcde547b0d4d576bc635ec
+      internalID: 1636085804
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pistol_3
       rect:
         serializedVersion: 2
         x: 0
-        y: 17
-        width: 33
-        height: 15
+        y: 48
+        width: 48
+        height: 48
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6eaa0793cc2e6a549aed42bd2dd156e6
-      internalID: -1384354715
+      spriteID: 9d1027d84a9975f45843ccc0943ec38d
+      internalID: -115074879
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Duck_3
+      name: Pistol_4
       rect:
         serializedVersion: 2
-        x: 33
-        y: 17
-        width: 33
-        height: 15
+        x: 48
+        y: 48
+        width: 48
+        height: 48
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6aa9874bb043bb747aaf83df0ab8823c
-      internalID: -1515234834
+      spriteID: c601df561552b2d47ac2d5e1338d9687
+      internalID: -1467725403
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pistol_5
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 48
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 56ab16727b7a6f448a0f915676cc5df7
+      internalID: 667253081
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pistol_6
+      rect:
+        serializedVersion: 2
+        x: 0
+        y: 0
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 12d680caee3b9f34292d6cb43feedcf4
+      internalID: -1915081726
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pistol_7
+      rect:
+        serializedVersion: 2
+        x: 48
+        y: 0
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 4f523ba2730dd5142b16b876b7844b81
+      internalID: -362064454
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Pistol_8
+      rect:
+        serializedVersion: 2
+        x: 96
+        y: 0
+        width: 48
+        height: 48
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: e1ff9cb444d272842973e2c7497e4671
+      internalID: -1717533380
       vertices: []
       indices: 
       edges: []
@@ -199,10 +304,15 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Duck_0: 1100195287
-      Duck_2: -1384354715
-      Duck_1: -298628478
-      Duck_3: -1515234834
+      Pistol_6: -1915081726
+      Pistol_4: -1467725403
+      Pistol_7: -362064454
+      Pistol_0: -1344693747
+      Pistol_1: -18039747
+      Pistol_2: 1636085804
+      Pistol_5: 667253081
+      Pistol_3: -115074879
+      Pistol_8: -1717533380
   spritePackingTag: 
   pSDRemoveMatte: 0
   pSDShowRemoveMatteOption: 0

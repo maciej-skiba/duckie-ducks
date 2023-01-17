@@ -41,4 +41,16 @@ public class Pause : MonoBehaviour
         Time.timeScale = 1;
         SceneManager.LoadScene(0);
     }
+
+    public void NextLevel()
+    {
+        Time.timeScale = 1;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+    }
+
+    public void TryAgain()
+    {
+        Time.timeScale = 1;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
 }

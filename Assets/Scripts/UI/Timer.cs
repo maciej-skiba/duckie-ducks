@@ -3,17 +3,21 @@ using UnityEngine;
 
 public class Timer : MonoBehaviour
 {
+    private TextMeshProUGUI _timerText;
+
     [HideInInspector] public short timeLeft;
-    private TextMeshProUGUI timerText;
+
+    public static Timer Instance { get; private set; } //Singleton
 
     private void Awake()
     {
-        timerText = this.GetComponent<TextMeshProUGUI>();
+        Instance = this;
+        _timerText = this.GetComponent<TextMeshProUGUI>();
     }
     private void Start()
     {
         timeLeft = 15;
-        timerText.text = timeLeft.ToString();
+        _timerText.text = timeLeft.ToString();
         InvokeRepeating("DecrementTimeLeft", 1, 1);
     }
 
@@ -22,11 +26,12 @@ public class Timer : MonoBehaviour
         if(timeLeft > 0)
         {
             timeLeft--;
-            timerText.text = timeLeft.ToString();
+            _timerText.text = timeLeft.ToString();
         }
         else
         {
-            LevelManager.LevelEnd();
+            Time.timeScale = 0;
+            LevelManager.Instance.LevelEnd();
         }
     }
 }
