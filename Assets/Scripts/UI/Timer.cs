@@ -5,7 +5,7 @@ public class Timer : MonoBehaviour
 {
     private TextMeshProUGUI _timerText;
 
-    [HideInInspector] public short timeLeft;
+    [HideInInspector] static public short timeLeft = 15;
 
     public static Timer Instance { get; private set; } //Singleton
 
@@ -16,7 +16,6 @@ public class Timer : MonoBehaviour
     }
     private void Start()
     {
-        timeLeft = 15;
         _timerText.text = timeLeft.ToString();
         InvokeRepeating("DecrementTimeLeft", 1, 1);
     }

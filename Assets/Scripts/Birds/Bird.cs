@@ -1,19 +1,18 @@
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 public abstract class Bird : MonoBehaviour
 {
     protected short health;
     protected float speed;
     protected short pointsGain;
-
+    protected BirdSpawnProperties.BirdTypes birdType;
 
     private void OnMouseDown()
     {
-        if (Weapon._canShoot)
+        if (!Weapon.s_isReloading)
         {
+            ScoreManager.Instance.AddScore(pointsGain, Input.mousePosition);
             Death();
-            ScoreManager.score += pointsGain;
         }
     }
 
