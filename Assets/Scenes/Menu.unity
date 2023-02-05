@@ -631,6 +631,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 765025c60acea264081beb7d39d543cd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _musicOnOffText: {fileID: 2054236721}
 --- !u!1 &662896899
 GameObject:
   m_ObjectHideFlags: 0
@@ -697,7 +698,7 @@ SpriteRenderer:
   m_Size: {x: 5.37, y: 3.22}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!4 &662896901
@@ -798,7 +799,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 924768096}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 592636501}
+        m_TargetAssemblyTypeName: MainMenu, Assembly-CSharp
+        m_MethodName: SwitchMusicOnOff
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &924768096
 MonoBehaviour:
   m_ObjectHideFlags: 0

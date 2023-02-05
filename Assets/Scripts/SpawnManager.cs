@@ -29,7 +29,7 @@ public class SpawnManager : MonoBehaviour
 
     private void Awake()
     {
-        switch (LevelManager.currentLevel)
+        switch (RoundEnd.currentLevel)
         {
             case (1):
                 _spawnRate = 0.5f;
@@ -50,7 +50,7 @@ public class SpawnManager : MonoBehaviour
     }
     private void Start()
     {
-        switch (LevelManager.currentLevel)
+        switch (RoundEnd.currentLevel)
         {
             case (1):
                 _birdTypeProportionRatios = new Dictionary<string, int>()

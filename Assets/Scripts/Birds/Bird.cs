@@ -9,7 +9,7 @@ public abstract class Bird : MonoBehaviour
 
     private void OnMouseDown()
     {
-        if (!Weapon.s_isReloading)
+        if (!Weapon.s_isReloading && Time.timeScale != 0)
         {
             ScoreManager.Instance.AddScore(pointsGain, Input.mousePosition);
             Death();

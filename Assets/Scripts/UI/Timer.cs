@@ -20,6 +20,11 @@ public class Timer : MonoBehaviour
         InvokeRepeating("DecrementTimeLeft", 1, 1);
     }
 
+    private void OnEnable()
+    {
+        timeLeft = 15;
+    }
+
     private void DecrementTimeLeft()
     {
         if(timeLeft > 0)
@@ -30,7 +35,7 @@ public class Timer : MonoBehaviour
         else
         {
             Time.timeScale = 0;
-            LevelManager.Instance.LevelEnd();
+            RoundEnd.Instance.LevelEnd();
         }
     }
 }

@@ -1,9 +1,10 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class LevelManager : MonoBehaviour
+public class RoundEnd : MonoBehaviour
 {
-    public static LevelManager Instance { get; private set; } //Singleton
+    [SerializeField] private GameObject _reloadBarWindow;
+    public static RoundEnd Instance { get; private set; } //Singleton
     public static int currentLevel;
 
     private void Awake()
@@ -14,6 +15,8 @@ public class LevelManager : MonoBehaviour
 
     public void LevelEnd()
     {
+        _reloadBarWindow.SetActive(false);
+
         PointsGain[] RemainingPointGainObjects = FindObjectsOfType<PointsGain>();
 
         for (int i=0; i < RemainingPointGainObjects.Length; i++)

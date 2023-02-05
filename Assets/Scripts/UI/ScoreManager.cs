@@ -36,7 +36,7 @@ public class ScoreManager : MonoBehaviour
                 _newPointsTextPrefab,
                 MousePosition, 
                 new Quaternion(0, 0, 0, 0), 
-                this.transform.parent.transform);
+                this.transform);
         pointsGainObject.GetComponent<PointsGain>().pointsGain = PointsGain; 
     }
 }

@@ -94,7 +94,7 @@ public class Weapon : MonoBehaviour
 
         }
 
-        if (Input.GetKeyDown(KeyCode.Mouse0) && !s_isReloading)
+        if (Input.GetKeyDown(KeyCode.Mouse0) && !s_isReloading && Time.timeScale != 0)
         {
             if (_bulletsInMagazine > 0)
             {
