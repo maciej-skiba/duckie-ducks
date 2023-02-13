@@ -7,6 +7,7 @@ public class Weapon : MonoBehaviour
     [SerializeField] private Animator _reloadCursorAnimator;
     [SerializeField] private GameObject _reloadBarWindow;
     [SerializeField] private TextMeshProUGUI _reloadText;
+    [SerializeField] private TextMeshProUGUI _magazineText;
 
     private GameObject _reloadCursor;
     private RectTransform _rectTransform;
@@ -14,7 +15,6 @@ public class Weapon : MonoBehaviour
     private float _fireRate;
     private Vector3 _mousePosition;
     private float _weaponWidth;
-    private int _bulletsInMagazine;
     private int _maxBulletsInMagazine;
     private float _delayBetweenRClicks = 0.1f;
     private Animator _reloadTextAnimator;
@@ -23,6 +23,7 @@ public class Weapon : MonoBehaviour
     [HideInInspector] public float reloadSpeed;
     public WeaponChoice weaponChoice;
     public static bool s_isReloading = false;
+    public static int _bulletsInMagazine;
 
     public enum WeaponChoice
     {
@@ -54,6 +55,8 @@ public class Weapon : MonoBehaviour
                 Debug.LogError("No weapon was chosen in Weapon.cs enum.");
                 break;
         }
+
+        _magazineText.text = $"{_bulletsInMagazine}/{_maxBulletsInMagazine}";
     }
 
     private void Start()
@@ -78,11 +81,11 @@ public class Weapon : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.R) && _bulletsInMagazine < _maxBulletsInMagazine && !s_isReloading)
         {
+            _reloadGameInProgress = true;
             StartCoroutine("CoStartReloading", _delayBetweenRClicks);
         }
-        else if (Input.GetKeyDown(KeyCode.R) && !_reloadGameInProgress)
+        else if (Input.GetKeyDown(KeyCode.R) && _reloadGameInProgress)
         {
-            _reloadGameInProgress = true;
             StartCoroutine("CoReload", GetRealReloadSpeed());
         }
 
@@ -100,6 +103,7 @@ public class Weapon : MonoBehaviour
             {
                 _bulletsInMagazine--;
                 _animator.SetTrigger("Shoot");
+                _magazineText.text = $"{_bulletsInMagazine}/{_maxBulletsInMagazine}";
             }
             else
             {
@@ -134,6 +138,9 @@ public class Weapon : MonoBehaviour
 
         s_isReloading = false;
         _reloadGameInProgress = false;
+
+        _bulletsInMagazine = _maxBulletsInMagazine;
+        _magazineText.text = $"{_bulletsInMagazine}/{_maxBulletsInMagazine}";
     }
 
     private float GetRealReloadSpeed()

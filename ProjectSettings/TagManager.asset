@@ -6,6 +6,7 @@ TagManager:
   tags:
   - FastReloadArea
   - NormalReloadArea
+  - SlowReloadArea
   layers:
   - Default
   - TransparentFX

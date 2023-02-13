@@ -7,15 +7,15 @@ public class ReloadBar : MonoBehaviour
     {
         if (collision.tag == "FastReloadArea")
         {
-            reloadMultiplier = 0.5f;
+            reloadMultiplier = 0.4f;
         }
         else if (collision.tag == "NormalReloadArea")
         {
-            reloadMultiplier = 1.0f;
+            reloadMultiplier = 0.8f;
         }
         else if (collision.tag == "SlowReloadArea")
         {
-            reloadMultiplier = 1.5f;
+            reloadMultiplier = 1.4f;
         }
     }
 }
