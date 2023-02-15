@@ -1,13 +1,15 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
 public class Weapon : MonoBehaviour
 {
-    [SerializeField] private Animator _reloadCursorAnimator;
+    [SerializeField] private Animator _reloadPointerAnimator;
     [SerializeField] private GameObject _reloadBarWindow;
     [SerializeField] private TextMeshProUGUI _reloadText;
     [SerializeField] private TextMeshProUGUI _magazineText;
+    [SerializeField] private Slider _circularReloadSlider;
 
     private GameObject _reloadCursor;
     private RectTransform _rectTransform;
@@ -19,10 +21,14 @@ public class Weapon : MonoBehaviour
     private float _delayBetweenRClicks = 0.1f;
     private Animator _reloadTextAnimator;
     private bool _reloadGameInProgress = false;
+    
+    private float _lastReloadSpeed = 1.0f;
+    private float _currentReloadingTime = 0;
 
     [HideInInspector] public float reloadSpeed;
     public WeaponChoice weaponChoice;
     public static bool s_isReloading = false;
+    public static bool s_reloadingCircleIsAnimating = false;
     public static int _bulletsInMagazine;
 
     public enum WeaponChoice
@@ -37,7 +43,7 @@ public class Weapon : MonoBehaviour
         _rectTransform = this.GetComponent<RectTransform>();
         _animator = this.GetComponent<Animator>();
         _weaponWidth = this.GetComponent<RectTransform>().rect.width;
-        _reloadCursor = _reloadCursorAnimator.gameObject;
+        _reloadCursor = _reloadPointerAnimator.gameObject;
         _reloadTextAnimator = _reloadText.GetComponent<Animator>();
 
         switch (weaponChoice)
@@ -77,8 +83,6 @@ public class Weapon : MonoBehaviour
     {
         _mousePosition = Input.mousePosition;
 
-        Debug.Log($"is reloading: {s_isReloading}, ");
-
         if (Input.GetKeyDown(KeyCode.R) && _bulletsInMagazine < _maxBulletsInMagazine && !s_isReloading)
         {
             _reloadGameInProgress = true;
@@ -86,7 +90,8 @@ public class Weapon : MonoBehaviour
         }
         else if (Input.GetKeyDown(KeyCode.R) && _reloadGameInProgress)
         {
-            StartCoroutine("CoReload", GetRealReloadSpeed());
+            _lastReloadSpeed = GetRealReloadSpeed();
+            StartCoroutine("CoReload", _lastReloadSpeed);
         }
 
         if (_mousePosition.x < Screen.width - _weaponWidth * 0.7f
@@ -111,6 +116,13 @@ public class Weapon : MonoBehaviour
             }
         }
 
+        if (s_reloadingCircleIsAnimating)
+        {
+            _currentReloadingTime += Time.deltaTime;
+
+            float t = _currentReloadingTime / _lastReloadSpeed;
+            _circularReloadSlider.value = Mathf.Lerp(0f, 1f, t);
+        }
     }
 
     IEnumerator CoStartReloading(float DelayBetweenRClicks)
@@ -119,25 +131,29 @@ public class Weapon : MonoBehaviour
 
         _reloadBarWindow.SetActive(true);
         s_isReloading = true;
-        _reloadCursorAnimator.SetTrigger("Reload");
+        _reloadPointerAnimator.SetTrigger("Reload");
 
         yield return new WaitForSeconds(1.0f);
 
         if (!_reloadGameInProgress)
         {
-            StartCoroutine("CoReload", GetRealReloadSpeed());
+            _lastReloadSpeed = GetRealReloadSpeed();
+            StartCoroutine("CoReload", _lastReloadSpeed);
         }
     }
     IEnumerator CoReload(float RealReloadSpeed)
     {
+        _currentReloadingTime = 0;
         Debug.Log("CoReloading");
         _reloadBarWindow.SetActive(false);
-        _reloadCursorAnimator.SetTrigger("EndReload");
+        _circularReloadSlider.value = 0;
+        s_reloadingCircleIsAnimating = true;
 
         yield return new WaitForSeconds(RealReloadSpeed);
 
         s_isReloading = false;
         _reloadGameInProgress = false;
+        s_reloadingCircleIsAnimating = false;
 
         _bulletsInMagazine = _maxBulletsInMagazine;
         _magazineText.text = $"{_bulletsInMagazine}/{_maxBulletsInMagazine}";

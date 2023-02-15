@@ -4,6 +4,9 @@ using UnityEngine.SceneManagement;
 public class RoundEnd : MonoBehaviour
 {
     [SerializeField] private GameObject _reloadBarWindow;
+    [SerializeField] private GameObject _reloadText;
+    [SerializeField] private GameObject _reloadingCircularCursor;
+
     public static RoundEnd Instance { get; private set; } //Singleton
     public static int currentLevel;
 
@@ -15,14 +18,7 @@ public class RoundEnd : MonoBehaviour
 
     public void LevelEnd()
     {
-        _reloadBarWindow.SetActive(false);
-
-        PointsGain[] RemainingPointGainObjects = FindObjectsOfType<PointsGain>();
-
-        for (int i=0; i < RemainingPointGainObjects.Length; i++)
-        {
-            Destroy(RemainingPointGainObjects[i].gameObject);
-        }
+        ClearRemainings();
 
         if (ScoreManager.score >= ScoreManager.Instance.scoreRequiredToWin)
         {
@@ -42,5 +38,21 @@ public class RoundEnd : MonoBehaviour
     private void ShowRetryWindow()
     {
         this.transform.GetChild(1).gameObject.SetActive(true);
+    }
+
+    private void ClearRemainings()
+    {
+        _reloadBarWindow.SetActive(false);
+        Weapon.s_isReloading = false;
+        Weapon.s_reloadingCircleIsAnimating = false;
+        _reloadingCircularCursor.SetActive(false);
+        _reloadText.SetActive(false);
+
+        PointsGain[] RemainingPointGainObjects = FindObjectsOfType<PointsGain>();
+
+        for (int i = 0; i < RemainingPointGainObjects.Length; i++)
+        {
+            Destroy(RemainingPointGainObjects[i].gameObject);
+        }
     }
 }
