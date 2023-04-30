@@ -5,31 +5,39 @@ using TMPro;
 
 public class Weapon : MonoBehaviour
 {
-    [SerializeField] private Animator _reloadPointerAnimator;
-    [SerializeField] private GameObject _reloadBarWindow;
-    [SerializeField] private TextMeshProUGUI _reloadText;
-    [SerializeField] private TextMeshProUGUI _magazineText;
-    [SerializeField] private Slider _circularReloadSlider;
+    [SerializeField] protected Animator _reloadPointerAnimator;
+    [SerializeField] protected GameObject _reloadBarWindow;
+    [SerializeField] protected TextMeshProUGUI _reloadText;
+    [SerializeField] protected TextMeshProUGUI _magazineText;
+    [SerializeField] protected Slider _circularReloadSlider;
+    [SerializeField] protected AudioSource _emptyMagazineSound;
 
-    private GameObject _reloadCursor;
-    private RectTransform _rectTransform;
-    private Animator _animator;
-    private float _fireRate;
-    private Vector3 _mousePosition;
-    private float _weaponWidth;
-    private int _maxBulletsInMagazine;
-    private float _delayBetweenRClicks = 0.1f;
-    private Animator _reloadTextAnimator;
-    private bool _reloadGameInProgress = false;
-    
-    private float _lastReloadSpeed = 1.0f;
-    private float _currentReloadingTime = 0;
+    protected GameObject _reloadCursor;
+    protected RectTransform _rectTransform;
+    protected Animator _animator;
+    protected float _fireRate;
+    protected Vector3 _mousePosition;
+    protected float _weaponWidth;
+    protected int _maxBulletsInMagazine;
+    protected float _delayBetweenRClicks = 0.1f;
+    protected Animator _reloadTextAnimator;
+    protected bool _reloadGameInProgress = false;
+    protected const float PerfectReloadTime = 0.4f;
+    protected const float GoodReloadTime = 0.8f;
+    protected const float JammedReloadTime = 1.4f;
+    protected bool _weaponRecoliing = false;
+    protected float _lastShotTime;
+    protected AudioSource _laserPistolShot;
+
+    protected float _lastReloadSpeed = 1.0f;
+    protected float _currentReloadingTime = 0;
 
     [HideInInspector] public float reloadSpeed;
     public WeaponChoice weaponChoice;
     public static bool s_isReloading = false;
     public static bool s_reloadingCircleIsAnimating = false;
-    public static int _bulletsInMagazine;
+    public static int s_bulletsInMagazine;
+
 
     public enum WeaponChoice
     {
@@ -38,22 +46,28 @@ public class Weapon : MonoBehaviour
         SniperRifle
     }
 
-    private void Awake()
+    protected void Awake()
     {
         _rectTransform = this.GetComponent<RectTransform>();
         _animator = this.GetComponent<Animator>();
         _weaponWidth = this.GetComponent<RectTransform>().rect.width;
         _reloadCursor = _reloadPointerAnimator.gameObject;
         _reloadTextAnimator = _reloadText.GetComponent<Animator>();
+        _laserPistolShot = this.GetComponent<AudioSource>();
 
         switch (weaponChoice)
         {
             case WeaponChoice.Pistol:
                 reloadSpeed = 2.0f;
                 _maxBulletsInMagazine = 6;
-                _bulletsInMagazine = _maxBulletsInMagazine;
+                s_bulletsInMagazine = _maxBulletsInMagazine;
+                _fireRate = 0.5f;
                 break;
             case WeaponChoice.DualPistol:
+                reloadSpeed = 2.0f;
+                _maxBulletsInMagazine = 12;
+                s_bulletsInMagazine = _maxBulletsInMagazine;
+                _fireRate = 0.3f;
                 break;
             case WeaponChoice.SniperRifle:
                 break;
@@ -62,28 +76,19 @@ public class Weapon : MonoBehaviour
                 break;
         }
 
-        _magazineText.text = $"{_bulletsInMagazine}/{_maxBulletsInMagazine}";
+        _magazineText.text = $"{s_bulletsInMagazine}/{_maxBulletsInMagazine}";
     }
 
-    private void Start()
-    {
-        switch(weaponChoice)
-        {
-            case WeaponChoice.Pistol:
-                _fireRate = 0.5f;
-                break;
-            default:
-                _fireRate = 0.5f;
-                break;
-        }
-
-    }
-
-    private void Update()
+    protected void Update()
     {
         _mousePosition = Input.mousePosition;
 
-        if (Input.GetKeyDown(KeyCode.R) && _bulletsInMagazine < _maxBulletsInMagazine && !s_isReloading)
+        if (_weaponRecoliing && Time.time - _lastShotTime > _fireRate)
+        {
+            _weaponRecoliing = false;
+        }
+
+        if (Input.GetKeyDown(KeyCode.R) && s_bulletsInMagazine < _maxBulletsInMagazine && !s_isReloading)
         {
             _reloadGameInProgress = true;
             StartCoroutine("CoStartReloading", _delayBetweenRClicks);
@@ -94,21 +99,21 @@ public class Weapon : MonoBehaviour
             StartCoroutine("CoReload", _lastReloadSpeed);
         }
 
-        if (_mousePosition.x < Screen.width - _weaponWidth * 0.7f
-        && _mousePosition.x > 0
-        && Time.timeScale != 0)
-        {
-            _rectTransform.transform.position = new Vector3(_mousePosition.x + _weaponWidth / 2, _rectTransform.transform.position.y);
-
-        }
+        UpdateWeaponPosition();
 
         if (Input.GetKeyDown(KeyCode.Mouse0) && !s_isReloading && Time.timeScale != 0)
         {
-            if (_bulletsInMagazine > 0)
+            if (s_bulletsInMagazine > 0)
             {
-                _bulletsInMagazine--;
-                _animator.SetTrigger("Shoot");
-                _magazineText.text = $"{_bulletsInMagazine}/{_maxBulletsInMagazine}";
+                if (!_weaponRecoliing)
+                {
+                    s_bulletsInMagazine--;
+                    _animator.SetTrigger("Shoot");
+                    _laserPistolShot.Play();
+                    _magazineText.text = $"{s_bulletsInMagazine}/{_maxBulletsInMagazine}";
+                    _weaponRecoliing = true;
+                    _lastShotTime = Time.time;
+                }
             }
             else
             {
@@ -133,9 +138,9 @@ public class Weapon : MonoBehaviour
         s_isReloading = true;
         _reloadPointerAnimator.SetTrigger("Reload");
 
-        yield return new WaitForSeconds(1.0f);
+        yield return new WaitForSeconds(2);
 
-        if (!_reloadGameInProgress)
+        if (_reloadBarWindow.activeInHierarchy)
         {
             _lastReloadSpeed = GetRealReloadSpeed();
             StartCoroutine("CoReload", _lastReloadSpeed);
@@ -155,36 +160,47 @@ public class Weapon : MonoBehaviour
         _reloadGameInProgress = false;
         s_reloadingCircleIsAnimating = false;
 
-        _bulletsInMagazine = _maxBulletsInMagazine;
-        _magazineText.text = $"{_bulletsInMagazine}/{_maxBulletsInMagazine}";
+        s_bulletsInMagazine = _maxBulletsInMagazine;
+        _magazineText.text = $"{s_bulletsInMagazine}/{_maxBulletsInMagazine}";
     }
 
-    private float GetRealReloadSpeed()
+    protected float GetRealReloadSpeed()
     {
         float reloadMultiplier = _reloadCursor.GetComponent<ReloadBar>().reloadMultiplier;
-        _reloadTextAnimator.SetTrigger("ShowText");
 
         switch (reloadMultiplier)
         {
-            case 0.5f:
+            case PerfectReloadTime:
                 _reloadText.text = "Perfect";
                 break;
-            case 1.0f:
+            case GoodReloadTime:
                 _reloadText.text = "Good";
                 break;
-            case 1.5f:
+            case JammedReloadTime:
                 _reloadText.text = "Jammed";
                 break;
         }
+
+        _reloadTextAnimator.SetTrigger("ShowText");
 
         Debug.Log($"Final Reload speed:  {reloadSpeed * reloadMultiplier}");
 
         return reloadSpeed * reloadMultiplier;
     }
 
-    private void EmptyMagazine()
+    protected void EmptyMagazine()
     {
-        // TODO: do something, e.g. play empty magazine sound
+        _emptyMagazineSound.Play();
         Debug.Log("Magazine is empty.");
+    }
+
+    protected virtual void UpdateWeaponPosition()
+    {
+        if (_mousePosition.x < Screen.width - _weaponWidth * 0.7f
+            && _mousePosition.x > 0
+            && Time.timeScale != 0)
+        {
+            _rectTransform.transform.position = new Vector3(_mousePosition.x + _weaponWidth / 2, _rectTransform.transform.position.y);
+        }
     }
 }
