@@ -107,8 +107,8 @@ public class Weapon : MonoBehaviour
             {
                 if (!_weaponRecoliing)
                 {
+                    ShootAnimation();
                     s_bulletsInMagazine--;
-                    _animator.SetTrigger("Shoot");
                     _laserPistolShot.Play();
                     _magazineText.text = $"{s_bulletsInMagazine}/{_maxBulletsInMagazine}";
                     _weaponRecoliing = true;
@@ -203,4 +203,9 @@ public class Weapon : MonoBehaviour
             _rectTransform.transform.position = new Vector3(_mousePosition.x + _weaponWidth / 2, _rectTransform.transform.position.y);
         }
     }
+
+    protected virtual void ShootAnimation()
+    {
+        _animator.SetTrigger("Shoot");
+    }    
 }

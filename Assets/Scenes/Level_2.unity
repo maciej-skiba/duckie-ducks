@@ -765,6 +765,7 @@ MonoBehaviour:
   _emptyMagazineSound: {fileID: 3692836932192760493}
   reloadSpeed: 0
   weaponChoice: 1
+  _secondaryPistolAnim: {fileID: 378248833}
 --- !u!114 &3692836932192760496 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 426456310, guid: c1885ee2480e8da4d9e1fe7c7fd5ff5b, type: 3}
