@@ -7,11 +7,15 @@ public abstract class Bird : MonoBehaviour
     protected short pointsGain;
     protected BirdSpawnProperties.BirdTypes birdType;
 
-    private void OnMouseDown()
+    protected void OnMouseDown()
     {
         if (!Weapon.s_isReloading && Time.timeScale != 0 && Weapon.s_bulletsInMagazine > 0)
         {
-            ScoreManager.Instance.AddScore(pointsGain, Input.mousePosition);
+            if (ScoreManager.Instance != null)
+            {
+                ScoreManager.Instance.AddScore(pointsGain, Input.mousePosition);
+            }
+
             Death();
         }
     }

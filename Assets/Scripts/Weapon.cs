@@ -37,7 +37,7 @@ public class Weapon : MonoBehaviour
     public static bool s_isReloading = false;
     public static bool s_reloadingCircleIsAnimating = false;
     public static int s_bulletsInMagazine;
-
+    public static bool _weaponLocked = false;
 
     public enum WeaponChoice
     {
@@ -81,6 +81,11 @@ public class Weapon : MonoBehaviour
 
     protected void Update()
     {
+        if(_weaponLocked)
+        {
+            return;
+        }
+
         _mousePosition = Input.mousePosition;
 
         if (_weaponRecoliing && Time.time - _lastShotTime > _fireRate)
@@ -100,6 +105,7 @@ public class Weapon : MonoBehaviour
         }
 
         UpdateWeaponPosition();
+        
 
         if (Input.GetKeyDown(KeyCode.Mouse0) && !s_isReloading && Time.timeScale != 0)
         {
