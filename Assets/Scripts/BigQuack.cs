@@ -14,8 +14,7 @@ public class BigQuack : MonoBehaviour
 
     private void OnMouseDown()
     {
-        print("quack shot");
-        if (BossFight.s_fightStage == 0)
+        if (BossFight.s_fightStage == 1)
         {
             StartCoroutine(TakeDamage());
 

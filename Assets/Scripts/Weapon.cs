@@ -79,6 +79,11 @@ public class Weapon : MonoBehaviour
         _magazineText.text = $"{s_bulletsInMagazine}/{_maxBulletsInMagazine}";
     }
 
+    private void Start()
+    {
+        StartCoroutine(CoLockWeaponAtStart());
+    }
+
     protected void Update()
     {
         if(_weaponLocked)
@@ -213,5 +218,12 @@ public class Weapon : MonoBehaviour
     protected virtual void ShootAnimation()
     {
         _animator.SetTrigger("Shoot");
-    }    
+    }
+    
+    IEnumerator CoLockWeaponAtStart()
+    {
+        _weaponLocked = true;
+        yield return new WaitForSeconds(0.3f);
+        _weaponLocked = false;
+    }
 }

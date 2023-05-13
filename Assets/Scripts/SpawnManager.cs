@@ -29,23 +29,8 @@ public class SpawnManager : MonoBehaviour
 
     private void Awake()
     {
-        switch (RoundEnd.currentLevel)
-        {
-            case (1):
-                _spawnRate = 0.5f;
-                break;
-            case (2):
-                _spawnRate = 0.4f;
-                break;
-            case (3):
-                _spawnRate = 0.3f;
-                break;
-            default:
-                Debug.Log("Unknown LevelManager.currentLevel");
-                break;
-        }
+
         _nofSpawners = _spawners.Length;
-        _nofBirdsToSpawn = (int)(Timer.timeLeft / _spawnRate) * 2; // *2 to make sure there will be enough birds at the end of timer
         _birdSpawnProperties = new List<BirdSpawnProperties>();
     }
     private void Start()
@@ -60,6 +45,7 @@ public class SpawnManager : MonoBehaviour
                     { "Eagle", 0 },
                     { "RoboEagle", 0 }
                 };
+                _spawnRate = 0.5f;
                 break;
             case (2):
                 _birdTypeProportionRatios = new Dictionary<string, int>()
@@ -69,6 +55,7 @@ public class SpawnManager : MonoBehaviour
                     { "Eagle", 1 },
                     { "RoboEagle", 1 }
                 };
+                _spawnRate = 0.4f;
                 break;
             case (3):
                 _birdTypeProportionRatios = new Dictionary<string, int>()
@@ -78,11 +65,14 @@ public class SpawnManager : MonoBehaviour
                     { "Eagle", 1 },
                     { "RoboEagle", 1 }
                 };
+                _spawnRate = 0.3f;
                 break;
             default:
                 Debug.Log("Unknown LevelManager.currentLevel");
                 break;
         }
+        _nofBirdsToSpawn = (int)(Timer.timeLeft / _spawnRate) * 2; // *2 to make sure there will be enough birds at the end of timer
+
         PrepareSpawns();
         StartCoroutine(CoSpawnBirds());
     }

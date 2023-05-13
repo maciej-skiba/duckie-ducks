@@ -1,26 +1,75 @@
 using UnityEngine;
-using System.Threading.Tasks;
 using System.Collections;
 using UnityEngine.UI;
 using TMPro;
 
 public class BossFight : MonoBehaviour
 {
+    /*  Boss fight stages:
+     *  0. Big Quack arrival
+     *  1. Big Quack flying
+     *  2. Fighting Laser Eyes
+     *  3. Big Quack flying 2
+     *  4. Catching bombs
+     *  5. Finishing Big Quack 
+     */
+
     [SerializeField] private Animator _bigQuackAnimator;
     [SerializeField] private GameObject __bigQuackArrivalDialogue;
     [SerializeField] private AudioSource _bigQuackUfoSound;
     [SerializeField] private Image[] _healthBars;
     [SerializeField] private TextMeshProUGUI[] _healthNames;
+    [SerializeField] private Camera _mainCamera;
+    [SerializeField] private GameObject _laserEyePrefab;
+
+    private bool _readyToChangeFightStage = false;
+    private float _min_X_SpawnPoint;
+    private float _max_X_SpawnPoint;
+    private float _min_Y_SpawnPoint;
+    private float _max_Y_SpawnPoint;
+    private float _nextLaserEyeSpawnTime = 0;
 
     public static byte s_fightStage = 0;
     public static float s_bossHealth = 100;
     public static float s_playerHealth = 100;
 
+    private void Awake()
+    {
+        // TODO: change it to be generic (e.g depended on screensize)
+        _min_X_SpawnPoint = -4.5f;
+        _max_X_SpawnPoint = 4.5f;
+        _min_Y_SpawnPoint = -1;
+        _max_Y_SpawnPoint = 3;
+    }
+
     private void Start()
     {
         Weapon._weaponLocked = true;
         StartCoroutine(BigQuackArrive());
-        
+    }
+
+    private void Update()
+    {
+        switch(s_fightStage)
+        {
+            case 0:
+                break;
+            case 1:
+                break;
+            case 2:
+                if (LaserEyeReadyToSpawn())
+                {
+                    SpawnLaserEye();
+                }
+                break;
+            case 3:
+                break;
+            case 4: 
+                break;
+            case 5:
+                break;
+            default: break;
+        }
     }
     IEnumerator BigQuackArrive()
     {
@@ -58,5 +107,30 @@ public class BossFight : MonoBehaviour
         }
          
         Weapon._weaponLocked = false;
+    }
+
+    private Vector3 GetRandomSpawnpoint()
+    {
+        return new Vector3(
+            Random.Range(_min_X_SpawnPoint, _max_X_SpawnPoint), 
+            Random.Range(_min_Y_SpawnPoint, _max_Y_SpawnPoint));
+    }
+
+    private void SpawnLaserEye()
+    {
+        Instantiate(_laserEyePrefab, GetRandomSpawnpoint(), Quaternion.Euler(Vector3.zero));
+
+        _nextLaserEyeSpawnTime  = Time.time + LaserEye.spawnTime + Random.Range(0, 0.5f);
+        print("time: " + _nextLaserEyeSpawnTime);
+    }
+
+    private bool LaserEyeReadyToSpawn()
+    {
+        if (_nextLaserEyeSpawnTime + LaserEye.spawnTime < Time.time)
+        {
+            return true;
+        }
+
+        return false;
     }
 }

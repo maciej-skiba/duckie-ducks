@@ -9,7 +9,10 @@ public abstract class Bird : MonoBehaviour
 
     protected void OnMouseDown()
     {
-        if (!Weapon.s_isReloading && Time.timeScale != 0 && Weapon.s_bulletsInMagazine > 0)
+        if (!Weapon.s_isReloading 
+            && Time.timeScale != 0 
+            && Weapon.s_bulletsInMagazine > 0
+            && !Weapon._weaponLocked)
         {
             if (ScoreManager.Instance != null)
             {
