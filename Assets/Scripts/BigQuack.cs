@@ -1,42 +1,57 @@
 using System.Collections;
+using UnityEditorInternal;
 using UnityEngine;
 
 public class BigQuack : MonoBehaviour
 {
     private SpriteRenderer _sprite;
 
+    private BigQuack() { }
+     
     public static int s_BigQuack_Health = 100;
+    public static bool s_BigQuackIsShootable = false;
+    public static BigQuack Instance { get; set; }
 
     private void Awake()
     {
+        Instance = this;
         _sprite = this.GetComponent<SpriteRenderer>();
     }
 
     private void OnMouseDown()
     {
-        if (BossFight.s_fightStage == 1)
+        if (s_BigQuackIsShootable)
         {
             StartCoroutine(TakeDamage());
-
-            if (s_BigQuack_Health <= 80)
-            {
-
-            }
         }
     }
 
     IEnumerator TakeDamage()
     {
-        s_BigQuack_Health -= 2;
+        print("BigQuack damaged.");
+        s_BigQuack_Health -= 5;
 
-        for(int i = 254; i > 130; i++)
+        Color newColor = _sprite.color;
+        float delta = 0.04f;
+
+        while(newColor.g > 0.5f)
         {
-            var eyeColor = _sprite.color;
-            eyeColor.g = i;
-            eyeColor.b = i;
-            _sprite.color = eyeColor;
+            newColor.g -= delta;
+            newColor.b -= delta;
+            
+            _sprite.color = newColor;
 
-            yield return new WaitForSeconds(0.02f);
+            yield return new WaitForSeconds(0.01f);
+        }
+
+        while (newColor.g < 1)
+        {
+            newColor.b += delta;
+            newColor.g += delta;
+
+            _sprite.color = newColor;
+
+            yield return new WaitForSeconds(0.01f);
         }
     }
 }

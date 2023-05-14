@@ -37,7 +37,7 @@ public class Weapon : MonoBehaviour
     public static bool s_isReloading = false;
     public static bool s_reloadingCircleIsAnimating = false;
     public static int s_bulletsInMagazine;
-    public static bool _weaponLocked = false;
+    public static bool s_weaponLocked = false;
 
     public enum WeaponChoice
     {
@@ -79,14 +79,9 @@ public class Weapon : MonoBehaviour
         _magazineText.text = $"{s_bulletsInMagazine}/{_maxBulletsInMagazine}";
     }
 
-    private void Start()
-    {
-        StartCoroutine(CoLockWeaponAtStart());
-    }
-
     protected void Update()
     {
-        if(_weaponLocked)
+        if(s_weaponLocked)
         {
             return;
         }
@@ -218,12 +213,5 @@ public class Weapon : MonoBehaviour
     protected virtual void ShootAnimation()
     {
         _animator.SetTrigger("Shoot");
-    }
-    
-    IEnumerator CoLockWeaponAtStart()
-    {
-        _weaponLocked = true;
-        yield return new WaitForSeconds(0.3f);
-        _weaponLocked = false;
     }
 }

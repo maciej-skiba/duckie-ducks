@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class RoundBegin : MonoBehaviour
+public class Dialogue : MonoBehaviour
 {
     [SerializeField] private GameObject[] _roundBeginObjs;
     private int _currentWindow = 0;
@@ -19,7 +19,7 @@ public class RoundBegin : MonoBehaviour
         _roundBeginObjs[_currentWindow].SetActive(true);
     }
 
-    public void StartGame()
+    public void Play()
     {
         _roundBeginObjs[_currentWindow++].SetActive(false);
         Time.timeScale = 1;

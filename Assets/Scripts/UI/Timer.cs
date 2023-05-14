@@ -5,6 +5,8 @@ public class Timer : MonoBehaviour
 {
     private TextMeshProUGUI _timerText;
 
+    private Timer() { }
+
     [HideInInspector] static public short timeLeft = 15;
 
     public static Timer Instance { get; private set; } //Singleton

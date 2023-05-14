@@ -12,7 +12,7 @@ public abstract class Bird : MonoBehaviour
         if (!Weapon.s_isReloading 
             && Time.timeScale != 0 
             && Weapon.s_bulletsInMagazine > 0
-            && !Weapon._weaponLocked)
+            && !Weapon.s_weaponLocked)
         {
             if (ScoreManager.Instance != null)
             {

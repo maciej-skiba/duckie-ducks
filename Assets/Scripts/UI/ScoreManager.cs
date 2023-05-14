@@ -5,7 +5,8 @@ public class ScoreManager : MonoBehaviour
 {
     [SerializeField] private GameObject _newPointsTextPrefab;
     private TextMeshProUGUI _scoreText;
-    private Vector3 _cursorCorrection = new Vector3(20, 10);
+
+    private ScoreManager() { }
     
     public int scoreRequiredToWin;
     public static int score;

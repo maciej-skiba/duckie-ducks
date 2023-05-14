@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
 using TMPro;
+using Unity.VisualScripting;
 
 public class BossFight : MonoBehaviour
 {
@@ -22,12 +23,13 @@ public class BossFight : MonoBehaviour
     [SerializeField] private Camera _mainCamera;
     [SerializeField] private GameObject _laserEyePrefab;
 
-    private bool _readyToChangeFightStage = false;
+    private bool _bigQuackIsFlying = false;
     private float _min_X_SpawnPoint;
     private float _max_X_SpawnPoint;
     private float _min_Y_SpawnPoint;
     private float _max_Y_SpawnPoint;
     private float _nextLaserEyeSpawnTime = 0;
+    private Vector3 _initialPosition;
 
     public static byte s_fightStage = 0;
     public static float s_bossHealth = 100;
@@ -40,38 +42,71 @@ public class BossFight : MonoBehaviour
         _max_X_SpawnPoint = 4.5f;
         _min_Y_SpawnPoint = -1;
         _max_Y_SpawnPoint = 3;
+        _initialPosition = this.transform.position;
     }
 
     private void Start()
     {
-        Weapon._weaponLocked = true;
-        StartCoroutine(BigQuackArrive());
+
+        Weapon.s_weaponLocked = true;
+        StartCoroutine(CoBigQuackArrive());
     }
 
     private void Update()
     {
+        print($"fight stage: {s_fightStage}");
         switch(s_fightStage)
         {
             case 0:
+                if (!Weapon.s_weaponLocked)
+                {
+                    s_fightStage = 1;
+                }
+
                 break;
             case 1:
+                if (!_bigQuackIsFlying)
+                {
+                    BigQuack.s_BigQuackIsShootable = true;
+                    _bigQuackIsFlying = true;
+                    StartCoroutine(CoBiqQuackFlying());
+                }
+
+                if (BigQuack.s_BigQuack_Health <= 66)
+                {
+                    s_fightStage = 2;
+                }
+
                 break;
             case 2:
+                if (BigQuack.s_BigQuackIsShootable)
+                {
+                    BigQuack.s_BigQuackIsShootable = false;
+                    StartCoroutine(CoBigQuackHide());
+                }
+
                 if (LaserEyeReadyToSpawn())
                 {
                     SpawnLaserEye();
                 }
+
                 break;
             case 3:
+                BigQuack.s_BigQuackIsShootable = true;
+
                 break;
             case 4: 
                 break;
             case 5:
+                BigQuack.s_BigQuackIsShootable = true;
+
                 break;
             default: break;
         }
+        print(BigQuack.Instance.transform.position);
+
     }
-    IEnumerator BigQuackArrive()
+    IEnumerator CoBigQuackArrive()
     {
         yield return new WaitUntil(() => Time.timeScale == 1);
         _bigQuackAnimator.SetTrigger("QuackArrive");
@@ -90,7 +125,9 @@ public class BossFight : MonoBehaviour
 
         yield return new WaitUntil(() => Time.timeScale == 1);
 
-        while(_healthBars[0].color.a < 1)
+        Weapon.s_weaponLocked = false;
+
+        while (_healthBars[0].color.a < 1)
         {
             for (int i = 0; i < _healthBars.Length; i++)
             {
@@ -106,7 +143,6 @@ public class BossFight : MonoBehaviour
             yield return new WaitForSeconds(0.04f);
         }
          
-        Weapon._weaponLocked = false;
     }
 
     private Vector3 GetRandomSpawnpoint()
@@ -132,5 +168,31 @@ public class BossFight : MonoBehaviour
         }
 
         return false;
+    }
+
+    IEnumerator CoBiqQuackFlying()
+    {
+        var floatingInitialPosition = BigQuack.Instance.transform.position;
+        _bigQuackAnimator.SetTrigger("FlyingAround");
+        BigQuack.Instance.transform.position = floatingInitialPosition;
+
+        while(s_bossHealth > 80)
+        { 
+            BigQuack.Instance.gameObject.transform.position = GetRandomSpawnpoint();
+
+            print(BigQuack.Instance.transform.position);
+            yield return new WaitForSeconds(1f);
+        }
+
+        s_fightStage = 2;
+
+        Weapon.s_weaponLocked = true;
+        BigQuack.Instance.transform.position = floatingInitialPosition;
+    }
+
+    IEnumerator CoBigQuackHide()
+    {
+        BigQuack.Instance.transform.position = _initialPosition;
+        yield return null;
     }
 }
