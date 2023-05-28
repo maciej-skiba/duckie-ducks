@@ -40,6 +40,7 @@ public class Pause : MonoBehaviour
 
     public void BackToMenu()
     {
+        RoundEnd.Instance.gameObject.SetActive(false);
         Time.timeScale = 1;
         SceneManager.LoadScene(0);
         AudioSource.PlayClipAtPoint(_clickSound, new Vector3(0, 0, 0));
@@ -47,6 +48,7 @@ public class Pause : MonoBehaviour
 
     public void NextLevel()
     {
+        RoundEnd.Instance.gameObject.SetActive(false);
         Time.timeScale = 1;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
         AudioSource.PlayClipAtPoint(_clickSound, new Vector3(0, 0, 0));
@@ -54,6 +56,7 @@ public class Pause : MonoBehaviour
 
     public void TryAgain()
     {
+        RoundEnd.Instance.gameObject.SetActive(false);
         Time.timeScale = 1;
         AudioSource.PlayClipAtPoint(_clickSound, new Vector3(0, 0, 0));
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);

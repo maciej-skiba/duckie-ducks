@@ -27,10 +27,10 @@ public class Weapon : MonoBehaviour
     protected const float JammedReloadTime = 1.4f;
     protected bool _weaponRecoliing = false;
     protected float _lastShotTime;
-    protected AudioSource _laserPistolShot;
-
     protected float _lastReloadSpeed = 1.0f;
     protected float _currentReloadingTime = 0;
+    protected AudioSource _laserPistolShot;
+
 
     [HideInInspector] public float reloadSpeed;
     public WeaponChoice weaponChoice;

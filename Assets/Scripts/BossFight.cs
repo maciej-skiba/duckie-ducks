@@ -3,6 +3,7 @@ using System.Collections;
 using UnityEngine.UI;
 using TMPro;
 using Unity.VisualScripting;
+using System;
 
 public class BossFight : MonoBehaviour
 {
@@ -16,12 +17,15 @@ public class BossFight : MonoBehaviour
      */
 
     [SerializeField] private Animator _bigQuackAnimator;
-    [SerializeField] private GameObject __bigQuackArrivalDialogue;
+    [SerializeField] private GameObject _bigQuackArrivalDialogue;
+    [SerializeField] private GameObject _afterStage1Dialogue;
     [SerializeField] private AudioSource _bigQuackUfoSound;
     [SerializeField] private Image[] _healthBars;
     [SerializeField] private TextMeshProUGUI[] _healthNames;
     [SerializeField] private Camera _mainCamera;
     [SerializeField] private GameObject _laserEyePrefab;
+    [SerializeField] private TextMeshProUGUI _playerHealthAmount;
+    [SerializeField] private TextMeshProUGUI _bossHealthAmount;
 
     private bool _bigQuackIsFlying = false;
     private float _min_X_SpawnPoint;
@@ -42,19 +46,22 @@ public class BossFight : MonoBehaviour
         _max_X_SpawnPoint = 4.5f;
         _min_Y_SpawnPoint = -1;
         _max_Y_SpawnPoint = 3;
-        _initialPosition = this.transform.position;
+        _initialPosition = BigQuack.Instance.transform.position;
     }
 
     private void Start()
     {
-
         Weapon.s_weaponLocked = true;
         StartCoroutine(CoBigQuackArrive());
+        _playerHealthAmount.text = s_playerHealth.ToString();
+        _bossHealthAmount.text = s_bossHealth.ToString();
     }
 
     private void Update()
     {
-        print($"fight stage: {s_fightStage}");
+        _playerHealthAmount.text = s_playerHealth.ToString();
+
+        //print($"fight stage: {s_fightStage}");
         switch(s_fightStage)
         {
             case 0:
@@ -72,10 +79,7 @@ public class BossFight : MonoBehaviour
                     StartCoroutine(CoBiqQuackFlying());
                 }
 
-                if (BigQuack.s_BigQuack_Health <= 66)
-                {
-                    s_fightStage = 2;
-                }
+                _bossHealthAmount.text = s_bossHealth.ToString();
 
                 break;
             case 2:
@@ -94,6 +98,8 @@ public class BossFight : MonoBehaviour
             case 3:
                 BigQuack.s_BigQuackIsShootable = true;
 
+                _bossHealthAmount.text = s_bossHealth.ToString();
+
                 break;
             case 4: 
                 break;
@@ -103,8 +109,13 @@ public class BossFight : MonoBehaviour
                 break;
             default: break;
         }
-        print(BigQuack.Instance.transform.position);
 
+        if (s_playerHealth <= 0)
+        {
+            Time.timeScale = 0;
+            RoundEnd.Instance.ClearRemainings();
+            RoundEnd.Instance.ShowRetryWindow();
+        }
     }
     IEnumerator CoBigQuackArrive()
     {
@@ -121,7 +132,7 @@ public class BossFight : MonoBehaviour
         yield return new WaitForSeconds(4);
 
         Time.timeScale = 0;
-        __bigQuackArrivalDialogue.SetActive(true);
+        _bigQuackArrivalDialogue.SetActive(true);
 
         yield return new WaitUntil(() => Time.timeScale == 1);
 
@@ -138,6 +149,8 @@ public class BossFight : MonoBehaviour
                 var healthNameColor = _healthNames[i].color;
                 healthNameColor.a += 0.04f;
                 _healthNames[i].color = healthNameColor;
+                _bossHealthAmount.color = healthNameColor;
+                _playerHealthAmount.color = healthNameColor;
             }
 
             yield return new WaitForSeconds(0.04f);
@@ -148,15 +161,15 @@ public class BossFight : MonoBehaviour
     private Vector3 GetRandomSpawnpoint()
     {
         return new Vector3(
-            Random.Range(_min_X_SpawnPoint, _max_X_SpawnPoint), 
-            Random.Range(_min_Y_SpawnPoint, _max_Y_SpawnPoint));
+            UnityEngine.Random.Range(_min_X_SpawnPoint, _max_X_SpawnPoint),
+            UnityEngine.Random.Range(_min_Y_SpawnPoint, _max_Y_SpawnPoint));
     }
 
     private void SpawnLaserEye()
     {
         Instantiate(_laserEyePrefab, GetRandomSpawnpoint(), Quaternion.Euler(Vector3.zero));
 
-        _nextLaserEyeSpawnTime  = Time.time + LaserEye.spawnTime + Random.Range(0, 0.5f);
+        _nextLaserEyeSpawnTime  = Time.time + LaserEye.spawnTime + UnityEngine.Random.Range(0, 0.5f);
         print("time: " + _nextLaserEyeSpawnTime);
     }
 
@@ -174,25 +187,48 @@ public class BossFight : MonoBehaviour
     {
         var floatingInitialPosition = BigQuack.Instance.transform.position;
         _bigQuackAnimator.SetTrigger("FlyingAround");
+
+        _bigQuackAnimator.enabled = false;
+
         BigQuack.Instance.transform.position = floatingInitialPosition;
 
-        while(s_bossHealth > 80)
-        { 
-            BigQuack.Instance.gameObject.transform.position = GetRandomSpawnpoint();
+        while(s_bossHealth > 66)
+        {
+            var newPosition = GetRandomSpawnpoint();
+            var oldPosition = BigQuack.Instance.gameObject.transform.position;
 
-            print(BigQuack.Instance.transform.position);
-            yield return new WaitForSeconds(1f);
+            var dashDuration = UnityEngine.Random.Range(0.3f, 1);
+
+            for(float f=0; f <= 1; f+= 0.01f)
+            {
+                BigQuack.Instance.gameObject.transform.position = Vector3.Lerp(oldPosition, newPosition, f);
+                
+                yield return new WaitForSeconds(0.01f);
+            }
+
+            var randWait = UnityEngine.Random.Range(0, 0.1f);
+
+            yield return new WaitForSeconds(randWait);
         }
 
         s_fightStage = 2;
-
-        Weapon.s_weaponLocked = true;
-        BigQuack.Instance.transform.position = floatingInitialPosition;
     }
 
     IEnumerator CoBigQuackHide()
     {
-        BigQuack.Instance.transform.position = _initialPosition;
-        yield return null;
+
+        Time.timeScale = 0;
+        _afterStage1Dialogue.SetActive(true);
+
+        yield return new WaitUntil(() => Time.timeScale == 1);
+
+        var interpolationRatio = 3f;
+
+        for (float f = 0; f <= interpolationRatio; f += 0.01f)
+        {
+            BigQuack.Instance.gameObject.transform.position = Vector3.Lerp(BigQuack.Instance.transform.position, _initialPosition, (f / interpolationRatio));
+            yield return new WaitForSeconds(0.01f);
+        }
     }
+
 }

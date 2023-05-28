@@ -35,12 +35,12 @@ public class RoundEnd : MonoBehaviour
         this.transform.GetChild(0).gameObject.SetActive(true);
     }
 
-    private void ShowRetryWindow()
+    public void ShowRetryWindow()
     {
         this.transform.GetChild(1).gameObject.SetActive(true);
     }
 
-    private void ClearRemainings()
+    public void ClearRemainings()
     {
         _reloadBarWindow.SetActive(false);
         Weapon.s_isReloading = false;

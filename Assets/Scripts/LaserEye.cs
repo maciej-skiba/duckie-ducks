@@ -33,6 +33,7 @@ public class LaserEye : Bird
         this._shootSound.Play();
         _animator.SetTrigger("Shoot");
         BossFight.s_playerHealth -= 5;
+        if (BossFight.s_playerHealth < 0) BossFight.s_playerHealth = 0;
     }
 
     override protected void Death()

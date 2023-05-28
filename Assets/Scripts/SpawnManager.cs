@@ -29,7 +29,6 @@ public class SpawnManager : MonoBehaviour
 
     private void Awake()
     {
-
         _nofSpawners = _spawners.Length;
         _birdSpawnProperties = new List<BirdSpawnProperties>();
     }
