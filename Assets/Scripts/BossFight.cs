@@ -19,6 +19,7 @@ public class BossFight : MonoBehaviour
     [SerializeField] private Animator _bigQuackAnimator;
     [SerializeField] private GameObject _bigQuackArrivalDialogue;
     [SerializeField] private GameObject _afterStage1Dialogue;
+    [SerializeField] private GameObject _afterStage2Dialogue;
     [SerializeField] private AudioSource _bigQuackUfoSound;
     [SerializeField] private Image[] _healthBars;
     [SerializeField] private TextMeshProUGUI[] _healthNames;
@@ -27,6 +28,8 @@ public class BossFight : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _playerHealthAmount;
     [SerializeField] private TextMeshProUGUI _bossHealthAmount;
 
+    private byte _laserEyeKilledGoal = 1;
+    private bool _bigQuackReadyToArrive = false;
     private bool _bigQuackIsFlying = false;
     private float _min_X_SpawnPoint;
     private float _max_X_SpawnPoint;
@@ -34,8 +37,11 @@ public class BossFight : MonoBehaviour
     private float _max_Y_SpawnPoint;
     private float _nextLaserEyeSpawnTime = 0;
     private Vector3 _initialPosition;
+    private Vector3 _bigQuackMiddlePosition = new Vector3(0, 0.81f, 0);
+    private SpriteRenderer _bigQuackSpriteRen;
 
     public static byte s_fightStage = 0;
+    public static byte s_LaserEyesDestroyed = 0;
     public static float s_bossHealth = 100;
     public static float s_playerHealth = 100;
 
@@ -55,13 +61,13 @@ public class BossFight : MonoBehaviour
         StartCoroutine(CoBigQuackArrive());
         _playerHealthAmount.text = s_playerHealth.ToString();
         _bossHealthAmount.text = s_bossHealth.ToString();
+        _bigQuackSpriteRen = BigQuack.Instance.GetComponent<SpriteRenderer>();
     }
 
     private void Update()
     {
         _playerHealthAmount.text = s_playerHealth.ToString();
 
-        //print($"fight stage: {s_fightStage}");
         switch(s_fightStage)
         {
             case 0:
@@ -83,13 +89,18 @@ public class BossFight : MonoBehaviour
 
                 break;
             case 2:
-                if (BigQuack.s_BigQuackIsShootable)
+                if (_bigQuackIsFlying)
                 {
-                    BigQuack.s_BigQuackIsShootable = false;
+                    _bigQuackIsFlying = false;
                     StartCoroutine(CoBigQuackHide());
                 }
 
-                if (LaserEyeReadyToSpawn())
+                if (s_LaserEyesDestroyed >= _laserEyeKilledGoal && !_bigQuackReadyToArrive)
+                {
+                    _bigQuackReadyToArrive = true;
+                    StartCoroutine(CoWaitUntilAllEyesDestroyed());
+                }
+                else if (LaserEyeReadyToSpawn())
                 {
                     SpawnLaserEye();
                 }
@@ -117,12 +128,14 @@ public class BossFight : MonoBehaviour
             RoundEnd.Instance.ShowRetryWindow();
         }
     }
+
     IEnumerator CoBigQuackArrive()
     {
         yield return new WaitUntil(() => Time.timeScale == 1);
+
         _bigQuackAnimator.SetTrigger("QuackArrive");
-        
-        while(_bigQuackUfoSound.volume < 1)
+
+        while (_bigQuackUfoSound.volume < 1)
         {
             _bigQuackUfoSound.volume += 0.1f;
 
@@ -155,7 +168,6 @@ public class BossFight : MonoBehaviour
 
             yield return new WaitForSeconds(0.04f);
         }
-         
     }
 
     private Vector3 GetRandomSpawnpoint()
@@ -181,6 +193,16 @@ public class BossFight : MonoBehaviour
         }
 
         return false;
+    }
+
+    private bool AreAllLaserEyesDead()
+    {
+        if (GameObject.FindObjectsOfType<LaserEye>().Length > 0)
+        {
+            return false;
+        }
+
+        return true;
     }
 
     IEnumerator CoBiqQuackFlying()
@@ -231,4 +253,34 @@ public class BossFight : MonoBehaviour
         }
     }
 
+    IEnumerator CoWaitUntilAllEyesDestroyed()
+    {
+        yield return new WaitUntil(() => AreAllLaserEyesDead());
+        Weapon.s_weaponLocked = true;
+
+        s_fightStage = 3;
+
+        yield return new WaitForSeconds(1.5f);
+
+        var bigQuackColor = _bigQuackSpriteRen.color;
+        bigQuackColor.a = 0;
+        _bigQuackSpriteRen.color = bigQuackColor;
+
+        BigQuack.Instance.transform.position = _bigQuackMiddlePosition;
+
+        for (float f=0; f<1.0f; f+=0.005f)
+        {
+            bigQuackColor.a += 0.005f;
+            _bigQuackSpriteRen.color = bigQuackColor;
+
+            yield return new WaitForSeconds(0.005f);
+        }
+
+        yield return new WaitForSeconds(1.5f);
+
+        Time.timeScale = 0;
+        _afterStage2Dialogue.SetActive(true);
+
+        Weapon.s_weaponLocked = false;
+    }
 }

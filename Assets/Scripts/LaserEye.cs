@@ -38,6 +38,7 @@ public class LaserEye : Bird
 
     override protected void Death()
     {
+        BossFight.s_LaserEyesDestroyed++;
         AudioSource.PlayClipAtPoint(_deathSound, this.transform.position, 2f);
         Destroy(this.gameObject);
     }
