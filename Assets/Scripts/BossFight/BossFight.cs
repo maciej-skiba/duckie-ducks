@@ -20,6 +20,7 @@ public class BossFight : MonoBehaviour
     [SerializeField] private GameObject _bigQuackArrivalDialogue;
     [SerializeField] private GameObject _afterStage1Dialogue;
     [SerializeField] private GameObject _afterStage2Dialogue;
+    [SerializeField] private GameObject _afterStage3Dialogue;
     [SerializeField] private AudioSource _bigQuackUfoSound;
     [SerializeField] private Image[] _healthBars;
     [SerializeField] private TextMeshProUGUI[] _healthNames;
@@ -27,10 +28,12 @@ public class BossFight : MonoBehaviour
     [SerializeField] private GameObject _laserEyePrefab;
     [SerializeField] private TextMeshProUGUI _playerHealthAmount;
     [SerializeField] private TextMeshProUGUI _bossHealthAmount;
+    [SerializeField] private BombSpawner _bombSpawner;
 
     private byte _laserEyeKilledGoal = 1;
     private bool _bigQuackReadyToArrive = false;
     private bool _bigQuackIsFlying = false;
+    private bool _bigQuackHidden = true;
     private float _min_X_SpawnPoint;
     private float _max_X_SpawnPoint;
     private float _min_Y_SpawnPoint;
@@ -73,7 +76,7 @@ public class BossFight : MonoBehaviour
             case 0:
                 if (!Weapon.s_weaponLocked)
                 {
-                    s_fightStage = 1;
+                    s_fightStage = 3;
                 }
 
                 break;
@@ -82,7 +85,7 @@ public class BossFight : MonoBehaviour
                 {
                     BigQuack.s_BigQuackIsShootable = true;
                     _bigQuackIsFlying = true;
-                    StartCoroutine(CoBiqQuackFlying());
+                    StartCoroutine(CoBiqQuackFlying(targetHealth: 66, nextStage: 2));
                 }
 
                 _bossHealthAmount.text = s_bossHealth.ToString();
@@ -92,7 +95,7 @@ public class BossFight : MonoBehaviour
                 if (_bigQuackIsFlying)
                 {
                     _bigQuackIsFlying = false;
-                    StartCoroutine(CoBigQuackHide());
+                    StartCoroutine(CoBigQuackHide(_initialPosition));
                 }
 
                 if (s_LaserEyesDestroyed >= _laserEyeKilledGoal && !_bigQuackReadyToArrive)
@@ -107,12 +110,27 @@ public class BossFight : MonoBehaviour
 
                 break;
             case 3:
-                BigQuack.s_BigQuackIsShootable = true;
+                if (!_bigQuackIsFlying)
+                {
+                    _bigQuackIsFlying = true;
+                    BigQuack.s_BigQuackIsShootable = true;
+                    StartCoroutine(CoBiqQuackFlying(targetHealth: 66, nextStage: 4));
+                }
 
                 _bossHealthAmount.text = s_bossHealth.ToString();
 
                 break;
-            case 4: 
+            case 4:
+                if(_bigQuackIsFlying)
+                {
+                    _bigQuackIsFlying = false;
+                    Time.timeScale = 0;
+                    _afterStage2Dialogue.SetActive(true);
+
+                    StartCoroutine(CoBigQuackHide(_initialPosition));
+                    StartCoroutine(_bombSpawner.CoSpawnBombs());
+                }
+
                 break;
             case 5:
                 BigQuack.s_BigQuackIsShootable = true;
@@ -141,6 +159,8 @@ public class BossFight : MonoBehaviour
 
             yield return new WaitForSeconds(0.2f);
         }
+
+        _bigQuackHidden = false;
 
         yield return new WaitForSeconds(4);
 
@@ -205,7 +225,7 @@ public class BossFight : MonoBehaviour
         return true;
     }
 
-    IEnumerator CoBiqQuackFlying()
+    IEnumerator CoBiqQuackFlying(int targetHealth, byte nextStage)
     {
         var floatingInitialPosition = BigQuack.Instance.transform.position;
         _bigQuackAnimator.SetTrigger("FlyingAround");
@@ -214,7 +234,7 @@ public class BossFight : MonoBehaviour
 
         BigQuack.Instance.transform.position = floatingInitialPosition;
 
-        while(s_bossHealth > 66)
+        while(s_bossHealth > targetHealth)
         {
             var newPosition = GetRandomSpawnpoint();
             var oldPosition = BigQuack.Instance.gameObject.transform.position;
@@ -233,10 +253,10 @@ public class BossFight : MonoBehaviour
             yield return new WaitForSeconds(randWait);
         }
 
-        s_fightStage = 2;
+        s_fightStage = nextStage;
     }
 
-    IEnumerator CoBigQuackHide()
+    IEnumerator CoBigQuackHide(Vector3 positionToHide)
     {
 
         Time.timeScale = 0;
@@ -248,9 +268,11 @@ public class BossFight : MonoBehaviour
 
         for (float f = 0; f <= interpolationRatio; f += 0.01f)
         {
-            BigQuack.Instance.gameObject.transform.position = Vector3.Lerp(BigQuack.Instance.transform.position, _initialPosition, (f / interpolationRatio));
+            BigQuack.Instance.gameObject.transform.position = Vector3.Lerp(BigQuack.Instance.transform.position, positionToHide, (f / interpolationRatio));
             yield return new WaitForSeconds(0.01f);
         }
+
+        _bigQuackHidden = true;
     }
 
     IEnumerator CoWaitUntilAllEyesDestroyed()
@@ -258,14 +280,14 @@ public class BossFight : MonoBehaviour
         yield return new WaitUntil(() => AreAllLaserEyesDead());
         Weapon.s_weaponLocked = true;
 
-        s_fightStage = 3;
-
         yield return new WaitForSeconds(1.5f);
 
         var bigQuackColor = _bigQuackSpriteRen.color;
         bigQuackColor.a = 0;
         _bigQuackSpriteRen.color = bigQuackColor;
 
+        yield return new WaitUntil(() => _bigQuackHidden);
+        
         BigQuack.Instance.transform.position = _bigQuackMiddlePosition;
 
         for (float f=0; f<1.0f; f+=0.005f)
@@ -279,8 +301,11 @@ public class BossFight : MonoBehaviour
         yield return new WaitForSeconds(1.5f);
 
         Time.timeScale = 0;
+
         _afterStage2Dialogue.SetActive(true);
+        s_fightStage = 3;
 
         Weapon.s_weaponLocked = false;
+        _bigQuackIsFlying = true;
     }
 }
