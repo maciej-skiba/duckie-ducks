@@ -20,6 +20,7 @@ public class BombSpawner : MonoBehaviour
 
     private void Start()
     {
+        _spawnOrderByTrack = new List<int>();
         _spawnTimes = new float[_amountOfBombs];
         _bombsPerSpawnpoint = (byte)(_amountOfBombs / _nofSpawnPoints);
         
@@ -39,6 +40,8 @@ public class BombSpawner : MonoBehaviour
         System.Random rand = new System.Random();
         _spawnOrderByTrack = _spawnOrderByTrack.OrderBy(_ => rand.Next()).ToList();
     }
+
+    
 
     public IEnumerator CoSpawnBombs()
     {

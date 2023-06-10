@@ -30,7 +30,7 @@ public class BossFight : MonoBehaviour
     [SerializeField] private TextMeshProUGUI _bossHealthAmount;
     [SerializeField] private BombSpawner _bombSpawner;
 
-    private byte _laserEyeKilledGoal = 1;
+    private byte _laserEyeKilledGoal = 5;
     private bool _bigQuackReadyToArrive = false;
     private bool _bigQuackIsFlying = false;
     private bool _bigQuackHidden = true;
@@ -76,7 +76,7 @@ public class BossFight : MonoBehaviour
             case 0:
                 if (!Weapon.s_weaponLocked)
                 {
-                    s_fightStage = 3;
+                    s_fightStage = 1;
                 }
 
                 break;
@@ -103,7 +103,8 @@ public class BossFight : MonoBehaviour
                     _bigQuackReadyToArrive = true;
                     StartCoroutine(CoWaitUntilAllEyesDestroyed());
                 }
-                else if (LaserEyeReadyToSpawn())
+                
+                if (LaserEyeReadyToSpawn() && s_LaserEyesDestroyed < _laserEyeKilledGoal)
                 {
                     SpawnLaserEye();
                 }
@@ -306,6 +307,5 @@ public class BossFight : MonoBehaviour
         s_fightStage = 3;
 
         Weapon.s_weaponLocked = false;
-        _bigQuackIsFlying = true;
     }
 }

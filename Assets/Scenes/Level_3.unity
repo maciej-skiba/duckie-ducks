@@ -5464,7 +5464,7 @@ MonoBehaviour:
   _bigQuackArrivalDialogue: {fileID: 1685455551}
   _afterStage1Dialogue: {fileID: 2109978157}
   _afterStage2Dialogue: {fileID: 1503811593}
-  _afterStage3Dialogue: {fileID: 0}
+  _afterStage3Dialogue: {fileID: 1003378721}
   _bigQuackUfoSound: {fileID: 638017709}
   _healthBars:
   - {fileID: 1162597075}
@@ -5476,7 +5476,7 @@ MonoBehaviour:
   _laserEyePrefab: {fileID: 942152691233725376, guid: 0efce10f80c112d41a5531be04c9b00c, type: 3}
   _playerHealthAmount: {fileID: 243040791}
   _bossHealthAmount: {fileID: 912394504}
-  _bombSpawner: {fileID: 0}
+  _bombSpawner: {fileID: 1426505589}
 --- !u!4 &1784915348
 Transform:
   m_ObjectHideFlags: 0
@@ -5771,7 +5771,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: You're gonna be a quacking problem... Let's see if you can handle these!
+  m_text: How dare you! You... You're gonna be a quacking problem!
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: dc36b3fdc14f47ebb36fd484a67e268a, type: 2}
   m_sharedMaterial: {fileID: 2140032, guid: dc36b3fdc14f47ebb36fd484a67e268a, type: 2}
