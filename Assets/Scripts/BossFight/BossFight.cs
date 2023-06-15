@@ -4,6 +4,7 @@ using UnityEngine.UI;
 using TMPro;
 using Unity.VisualScripting;
 using System;
+using System.Collections.Generic;
 
 public class BossFight : MonoBehaviour
 {
@@ -23,12 +24,19 @@ public class BossFight : MonoBehaviour
     [SerializeField] private GameObject _afterStage3Dialogue;
     [SerializeField] private AudioSource _bigQuackUfoSound;
     [SerializeField] private Image[] _healthBars;
+    [SerializeField] private Sprite _healthBarSprite0;
+    [SerializeField] private Sprite _healthBarSprite15;
+    [SerializeField] private Sprite _healthBarSprite35;
+    [SerializeField] private Sprite _healthBarSprite50;
+    [SerializeField] private Sprite _healthBarSprite65;
+    [SerializeField] private Sprite _healthBarSprite80;
     [SerializeField] private TextMeshProUGUI[] _healthNames;
     [SerializeField] private Camera _mainCamera;
     [SerializeField] private GameObject _laserEyePrefab;
     [SerializeField] private TextMeshProUGUI _playerHealthAmount;
     [SerializeField] private TextMeshProUGUI _bossHealthAmount;
     [SerializeField] private BombSpawner _bombSpawner;
+
 
     private byte _laserEyeKilledGoal = 5;
     private bool _bigQuackReadyToArrive = false;
@@ -69,7 +77,6 @@ public class BossFight : MonoBehaviour
 
     private void Update()
     {
-        _playerHealthAmount.text = s_playerHealth.ToString();
 
         switch(s_fightStage)
         {
@@ -85,7 +92,7 @@ public class BossFight : MonoBehaviour
                 {
                     BigQuack.s_BigQuackIsShootable = true;
                     _bigQuackIsFlying = true;
-                    StartCoroutine(CoBiqQuackFlying(targetHealth: 66, nextStage: 2));
+                    StartCoroutine(CoBiqQuackFlying(targetHealth: 65, nextStage: 2));
                 }
 
                 _bossHealthAmount.text = s_bossHealth.ToString();
@@ -94,6 +101,7 @@ public class BossFight : MonoBehaviour
             case 2:
                 if (_bigQuackIsFlying)
                 {
+                    BigQuack.s_BigQuackIsShootable = false;
                     _bigQuackIsFlying = false;
                     StartCoroutine(CoBigQuackHide(_initialPosition));
                 }
@@ -111,11 +119,10 @@ public class BossFight : MonoBehaviour
 
                 break;
             case 3:
-                if (!_bigQuackIsFlying)
+                if (!_bigQuackIsFlying && Time.timeScale != 0)
                 {
                     _bigQuackIsFlying = true;
-                    BigQuack.s_BigQuackIsShootable = true;
-                    StartCoroutine(CoBiqQuackFlying(targetHealth: 66, nextStage: 4));
+                    StartCoroutine(CoBiqQuackFlying(targetHealth: 35, nextStage: 4));
                 }
 
                 _bossHealthAmount.text = s_bossHealth.ToString();
@@ -125,8 +132,7 @@ public class BossFight : MonoBehaviour
                 if(_bigQuackIsFlying)
                 {
                     _bigQuackIsFlying = false;
-                    Time.timeScale = 0;
-                    _afterStage2Dialogue.SetActive(true);
+                    BigQuack.s_BigQuackIsShootable = false;
 
                     StartCoroutine(CoBigQuackHide(_initialPosition));
                     StartCoroutine(_bombSpawner.CoSpawnBombs());
@@ -139,6 +145,9 @@ public class BossFight : MonoBehaviour
                 break;
             default: break;
         }
+
+        _playerHealthAmount.text = s_playerHealth.ToString();
+        CheckHealthAndCheckHpBarImage();
 
         if (s_playerHealth <= 0)
         {
@@ -235,7 +244,9 @@ public class BossFight : MonoBehaviour
 
         BigQuack.Instance.transform.position = floatingInitialPosition;
 
-        while(s_bossHealth > targetHealth)
+        BigQuack.s_BigQuackIsShootable = true;
+
+        while (s_bossHealth > targetHealth)
         {
             var newPosition = GetRandomSpawnpoint();
             var oldPosition = BigQuack.Instance.gameObject.transform.position;
@@ -244,6 +255,8 @@ public class BossFight : MonoBehaviour
 
             for(float f=0; f <= 1; f+= 0.01f)
             {
+                if (s_bossHealth <= targetHealth) goto End;
+
                 BigQuack.Instance.gameObject.transform.position = Vector3.Lerp(oldPosition, newPosition, f);
                 
                 yield return new WaitForSeconds(0.01f);
@@ -251,17 +264,23 @@ public class BossFight : MonoBehaviour
 
             var randWait = UnityEngine.Random.Range(0, 0.1f);
 
-            yield return new WaitForSeconds(randWait);
+            for (int i = 0; i < 10; i++)
+            {
+                if (s_bossHealth <= targetHealth) goto End;
+
+                yield return new WaitForSeconds(randWait / 10.0f);
+            }
         }
 
-        s_fightStage = nextStage;
+        End:
+            s_fightStage = nextStage;
     }
 
     IEnumerator CoBigQuackHide(Vector3 positionToHide)
     {
-
         Time.timeScale = 0;
-        _afterStage1Dialogue.SetActive(true);
+        if (s_fightStage == 2) _afterStage1Dialogue.SetActive(true);
+        if (s_fightStage == 4) _afterStage3Dialogue.SetActive(true);
 
         yield return new WaitUntil(() => Time.timeScale == 1);
 
@@ -274,6 +293,7 @@ public class BossFight : MonoBehaviour
         }
 
         _bigQuackHidden = true;
+        Time.timeScale = 1;
     }
 
     IEnumerator CoWaitUntilAllEyesDestroyed()
@@ -307,5 +327,27 @@ public class BossFight : MonoBehaviour
         s_fightStage = 3;
 
         Weapon.s_weaponLocked = false;
+    }
+
+    //[SerializeField] private Image _healthBar0;
+    //[SerializeField] private Image _healthBar15;
+    //[SerializeField] private Image _healthBar35;
+    //[SerializeField] private Image _healthBar50;
+    //[SerializeField] private Image _healthBar65;
+    //[SerializeField] private Image _healthBar80;
+
+    private void CheckHealthAndCheckHpBarImage()
+    {
+        List<float> healths = new List<float> { BossFight.s_playerHealth, BossFight.s_bossHealth};
+
+        for (int i = 0; i <= 1; i++)
+        {
+            if (healths[i] <= 0) _healthBars[i].sprite = _healthBarSprite0;  
+            else if (healths[i] <= 15) _healthBars[i].sprite = _healthBarSprite15;  
+            else if (healths[i] <= 35) _healthBars[i].sprite = _healthBarSprite35;  
+            else if (healths[i] <= 50) _healthBars[i].sprite = _healthBarSprite50;  
+            else if (healths[i] <= 65) _healthBars[i].sprite = _healthBarSprite65;  
+            else if (healths[i] <= 80) _healthBars[i].sprite = _healthBarSprite80;
+        }
     }
 }

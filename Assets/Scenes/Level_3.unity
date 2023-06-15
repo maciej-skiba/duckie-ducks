@@ -5469,6 +5469,12 @@ MonoBehaviour:
   _healthBars:
   - {fileID: 1162597075}
   - {fileID: 209166240}
+  _healthBarSprite0: {fileID: 972562813, guid: 628afbe8b77d34a4b846c52c921420c0, type: 3}
+  _healthBarSprite15: {fileID: 2061030829, guid: 628afbe8b77d34a4b846c52c921420c0, type: 3}
+  _healthBarSprite35: {fileID: 1634393005, guid: 628afbe8b77d34a4b846c52c921420c0, type: 3}
+  _healthBarSprite50: {fileID: 1551213481, guid: 628afbe8b77d34a4b846c52c921420c0, type: 3}
+  _healthBarSprite65: {fileID: 2019327770, guid: 628afbe8b77d34a4b846c52c921420c0, type: 3}
+  _healthBarSprite80: {fileID: 1203658616, guid: 628afbe8b77d34a4b846c52c921420c0, type: 3}
   _healthNames:
   - {fileID: 662816272}
   - {fileID: 95873456}

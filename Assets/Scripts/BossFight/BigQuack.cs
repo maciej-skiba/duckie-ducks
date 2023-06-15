@@ -20,7 +20,12 @@ public class BigQuack : MonoBehaviour
 
     private void OnMouseDown()
     {
-        if (s_BigQuackIsShootable)
+
+        if (!Weapon.s_isReloading
+            && Time.timeScale != 0
+            && Weapon.s_bulletsInMagazine > 0
+            && !Weapon.s_weaponLocked
+            && s_BigQuackIsShootable)
         {
             StartCoroutine(TakeDamage());
         }

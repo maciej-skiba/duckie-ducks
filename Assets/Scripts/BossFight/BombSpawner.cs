@@ -41,8 +41,6 @@ public class BombSpawner : MonoBehaviour
         _spawnOrderByTrack = _spawnOrderByTrack.OrderBy(_ => rand.Next()).ToList();
     }
 
-    
-
     public IEnumerator CoSpawnBombs()
     {
         for (int i = 0; i < _spawnTimes.Length; i++)
