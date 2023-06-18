@@ -12,8 +12,16 @@ public class RoundEnd : MonoBehaviour
 
     private void Awake()
     {
-        Instance = this;
         currentLevel = SceneManager.GetActiveScene().buildIndex;
+
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this);
+        }
+        else
+        {
+            Instance = this;
+        }
     }
 
     public void LevelEnd()

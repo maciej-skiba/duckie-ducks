@@ -1873,8 +1873,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 3692836931295384543}
-        m_TargetAssemblyTypeName: RoundBegin, Assembly-CSharp
-        m_MethodName: StartGame
+        m_TargetAssemblyTypeName: Dialogue, Assembly-CSharp
+        m_MethodName: Play
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

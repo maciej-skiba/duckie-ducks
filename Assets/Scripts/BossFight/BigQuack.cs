@@ -34,7 +34,7 @@ public class BigQuack : MonoBehaviour
     IEnumerator TakeDamage()
     {
         print("BigQuack damaged.");
-        BossFight.s_bossHealth -= 5;
+        BossFight.s_bossHealth -= 10;
 
         Color newColor = _sprite.color;
         float delta = 0.04f;

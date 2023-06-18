@@ -50,8 +50,8 @@ public class Pause : MonoBehaviour
     {
         RoundEnd.Instance.gameObject.SetActive(false);
         Time.timeScale = 1;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
         AudioSource.PlayClipAtPoint(_clickSound, new Vector3(0, 0, 0));
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
 
     public void TryAgain()

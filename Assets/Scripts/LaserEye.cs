@@ -7,6 +7,7 @@ public class LaserEye : Bird
     private AudioSource _shootSound;
     private SpriteRenderer _sprite;
     private Animator _animator;
+    private int _damage = 0;
 
     public static int spawnTime = 1;
 
@@ -32,7 +33,7 @@ public class LaserEye : Bird
     {
         this._shootSound.Play();
         _animator.SetTrigger("Shoot");
-        BossFight.s_playerHealth -= 5;
+        BossFight.s_playerHealth -= _damage;
         if (BossFight.s_playerHealth < 0) BossFight.s_playerHealth = 0;
     }
 
