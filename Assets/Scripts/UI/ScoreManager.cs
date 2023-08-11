@@ -29,7 +29,7 @@ public class ScoreManager : MonoBehaviour
         _scoreText.text = "Score: " + score.ToString();
     }
 
-    public void AddScore(int PointsGain, Vector3 MousePosition)
+    public GameObject AddScore(int PointsGain, Vector3 MousePosition)
     {
         score += PointsGain;
         GameObject pointsGainObject = 
@@ -38,6 +38,8 @@ public class ScoreManager : MonoBehaviour
                 MousePosition, 
                 new Quaternion(0, 0, 0, 0), 
                 this.transform);
-        pointsGainObject.GetComponent<PointsGain>().pointsGain = PointsGain; 
+        pointsGainObject.GetComponent<PointsGain>().pointsGain = PointsGain;
+
+        return pointsGainObject;
     }
 }

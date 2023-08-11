@@ -1,9 +1,6 @@
 using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
-using TMPro;
-using Unity.VisualScripting;
-using System;
 using System.Collections.Generic;
 
 public class BossFight : MonoBehaviour
